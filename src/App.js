@@ -5,7 +5,7 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/stats.json')
+    fetch(process.env.PUBLIC_URL + '/stats.json')
       .then(response => {
         if (!response.ok) {
           throw new Error('Network response was not ok');
