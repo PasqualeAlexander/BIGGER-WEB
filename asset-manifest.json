@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/BIGGER-WEB/static/css/main.1c1f88ed.css",
+    "main.js": "/BIGGER-WEB/static/js/main.03730d64.js",
+    "static/js/453.3679de86.chunk.js": "/BIGGER-WEB/static/js/453.3679de86.chunk.js",
+    "index.html": "/BIGGER-WEB/index.html",
+    "main.1c1f88ed.css.map": "/BIGGER-WEB/static/css/main.1c1f88ed.css.map",
+    "main.03730d64.js.map": "/BIGGER-WEB/static/js/main.03730d64.js.map",
+    "453.3679de86.chunk.js.map": "/BIGGER-WEB/static/js/453.3679de86.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1c1f88ed.css",
+    "static/js/main.03730d64.js"
+  ]
+}
