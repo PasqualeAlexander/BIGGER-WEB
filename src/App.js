@@ -138,8 +138,8 @@ function App() {
       {/* --- Barra de Navegación --- */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4 border-bottom border-body">
         <div className="container">
-          <a className="navbar-brand" href="#">
-            <i className="bi bi-bar-chart-line-fill me-2"></i>
+          <a className="navbar-brand d-flex align-items-center" href="#">
+            <img src={process.env.PUBLIC_URL + '/lnb-logo.png'} alt="LNB Logo" style={{ height: '30px', marginRight: '10px' }} />
             BW Bigger Web
           </a>
           <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown">
