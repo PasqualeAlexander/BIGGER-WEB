@@ -82,7 +82,7 @@ function App() {
     }
 
     return filteredData;
-  }, [stats.players, searchTerm, sortConfig, activeFilters]);
+  }, [stats.top50Players, searchTerm, sortConfig, activeFilters]);
 
   // --- Manejadores de eventos ---
   const requestSort = (key) => {
@@ -153,7 +153,7 @@ function App() {
       {/* --- Barra de Navegación --- */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark mb-4 border-bottom border-body">
         <div className="container">
-          <a className="navbar-brand d-flex align-items-center" href="#">
+           <a className="navbar-brand d-flex align-items-center" href="/">
             <img src={process.env.PUBLIC_URL + '/lnb-logo.png'} alt="LNB Logo" style={{ height: '30px', marginRight: '10px' }} />
             BW Bigger Web
           </a>
@@ -163,7 +163,7 @@ function App() {
           <div className="collapse navbar-collapse" id="navbarNavDropdown">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                <a className="nav-link dropdown-toggle" href="/" role="button" data-bs-toggle="dropdown">
                   <i className="bi bi-list-ul me-1"></i> Menú
                 </a>
                 <ul className="dropdown-menu dropdown-menu-dark">
