@@ -8,7 +8,7 @@ async function exportTopPlayers() {
     try {
         console.log('📊 Exportando estadísticas de los mejores jugadores...');
 
-        // 1. Obtener todos los jugadores
+        // --- TOP 50 por XP (lógica existente) ---
         const todosLosJugadores = await dbFunctions.obtenerTodosJugadores();
 
         if (!todosLosJugadores || todosLosJugadores.length === 0) {
@@ -16,14 +16,8 @@ async function exportTopPlayers() {
             return;
         }
 
-        // 2. Ordenar por XP descendente
         todosLosJugadores.sort((a, b) => b.xp - a.xp);
-
-        // 3. Tomar el top 50
-        const top50 = todosLosJugadores.slice(0, 50);
-
-        // 4. Mapear a un formato limpio para el frontend
-        const statsParaFrontend = top50.map((p, index) => ({
+        const top50 = todosLosJugadores.slice(0, 50).map((p, index) => ({
             rank: index + 1,
             name: p.nombre_display || p.nombre,
             level: p.nivel,
@@ -32,24 +26,49 @@ async function exportTopPlayers() {
             goals: p.goles,
             assists: p.asistencias,
             matches: p.partidos,
-            mvps: p.mvps
+            mvps: p.mvps,
+            cleanSheets: p.vallasInvictas,
+            hatTricks: p.hatTricks
         }));
 
-        // 5. Guardar el archivo JSON
-        const outputPath = path.join(__dirname, 'stats-dashboard', 'public', 'stats.json');
+        // --- TOP 10 por diferentes filtros ---
+        const top10Lists = {};
+        const categories = [
+            { key: 'xp', field: 'xp', name: 'Top XP' },
+            { key: 'wins', field: 'victorias', name: 'Top Victorias' },
+            { key: 'goals', field: 'goles', name: 'Top Goles' },
+            { key: 'assists', field: 'asistencias', name: 'Top Asistencias' },
+            { key: 'matches', field: 'partidos', name: 'Top Partidos' },
+            { key: 'mvps', field: 'mvps', name: 'Top MVPs' },
+            { key: 'cleanSheets', field: 'vallasInvictas', name: 'Top Vallas Invictas' },
+            { key: 'hatTricks', field: 'hatTricks', name: 'Top Hat-Tricks' }
+        ];
+
+        for (const category of categories) {
+            console.log(`Fetching Top 10 for: ${category.name}`);
+            const topPlayers = await dbFunctions.obtenerTopJugadores(category.field, 10);
+            top10Lists[category.key] = topPlayers.map((p, index) => ({
+                rank: index + 1,
+                name: p.nombre_display || p.nombre,
+                value: p[category.field] // Use the dynamic field value
+            }));
+        }
+
+        // --- Guardar el archivo JSON ---
+        const outputPath = path.join(__dirname, 'public', 'stats.json');
         const jsonData = JSON.stringify({
             lastUpdated: new Date().toISOString(),
-            players: statsParaFrontend
+            top50Players: top50,
+            top10Lists: top10Lists
         }, null, 2);
 
         fs.writeFileSync(outputPath, jsonData);
 
-        console.log(`✅ ¡Exportación completada! Top 50 jugadores guardados en ${outputPath}`);
+        console.log(`✅ ¡Exportación completada! Estadísticas guardadas en ${outputPath}`);
 
     } catch (error) {
         console.error('❌ Error durante la exportación de estadísticas:', error);
     } finally {
-        // 6. Cerrar la conexión a la base de datos
         await closePool();
         console.log('🔌 Conexión a la base de datos cerrada.');
     }

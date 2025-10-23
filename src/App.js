@@ -11,7 +11,7 @@ const SortIcon = ({ direction }) => {
 
 function App() {
   // Estados existentes
-  const [stats, setStats] = useState({ players: [], lastUpdated: null });
+  const [stats, setStats] = useState({ top50Players: [], top10Lists: {}, lastUpdated: null });
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'rank', direction: 'asc' });
@@ -35,7 +35,11 @@ function App() {
         if (!response.ok) throw new Error('Network response was not ok');
         return response.json();
       })
-      .then(data => setStats(data))
+      .then(data => setStats({ 
+        top50Players: data.top50Players || [], 
+        top10Lists: data.top10Lists || {}, 
+        lastUpdated: data.lastUpdated 
+      }))
       .catch(error => {
         console.error('Error fetching stats:', error);
         setError(error.message);
@@ -44,7 +48,7 @@ function App() {
 
   // Lógica de filtrado y ordenamiento
   const sortedAndFilteredPlayers = useMemo(() => {
-    let filteredData = [...stats.players];
+    let filteredData = [...stats.top50Players];
 
     // 1. Filtro por nombre
     if (searchTerm) {
@@ -133,6 +137,17 @@ function App() {
       {label: 'MVPs', baseKey: 'mvps'}
   ];
 
+  const categories = [
+    { key: 'xp', field: 'xp', name: 'Top XP' },
+    { key: 'wins', field: 'victorias', name: 'Top Victorias' },
+    { key: 'goals', field: 'goles', name: 'Top Goles' },
+    { key: 'assists', field: 'asistencias', name: 'Top Asistencias' },
+    { key: 'matches', field: 'partidos', name: 'Top Partidos' },
+    { key: 'mvps', field: 'mvps', name: 'Top MVPs' },
+    { key: 'cleanSheets', field: 'vallasInvictas', name: 'Top Vallas Invictas' },
+    { key: 'hatTricks', field: 'hatTricks', name: 'Top Hat-Tricks' }
+  ];
+
   return (
     <div className="App" data-bs-theme="dark">
       {/* --- Barra de Navegación --- */}
@@ -161,57 +176,101 @@ function App() {
         </div>
       </nav>
 
+      {/* --- Sección de Top 10 --- */}
+      <div className="container mb-4">
+        <h3 className="mb-3 text-white">🏆 Tops por Categoría</h3>
+        <div className="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+          {Object.entries(stats.top10Lists).map(([key, list]) => (
+            <div className="col" key={key}>
+              <div className="card h-100 shadow-sm bg-dark text-white border-secondary">
+                <div className="card-header bg-primary text-white">{list.length > 0 ? categories.find(cat => cat.key === key)?.name : `Top ${key.toUpperCase()}`}</div>
+                <div className="card-body p-0">
+                  <div className="table-responsive">
+                    <table className="table table-sm table-dark table-striped table-hover mb-0">
+                      <thead>
+                        <tr>
+                          <th scope="col">#</th>
+                          <th scope="col">Nombre</th>
+                          <th scope="col">Valor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {list.map((player, index) => (
+                          <tr key={player.name || index}>
+                            <td>{player.rank}</td>
+                            <td>{player.name}</td>
+                            <td>{player.value}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* --- Contenido Principal --- */}
       <main className="container">
-        <div className="card shadow">
-          <div className="card-header bg-dark-subtle">
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
-                <div className="mb-2 mb-md-0">
-                    <h4 className="mb-0">📊 Top 50 Jugadores</h4>
-                    <small className="text-muted">Última actualización: {formatDate(stats.lastUpdated)}</small>
+        <div className="mb-4">
+          <button className="btn btn-primary w-100 d-flex justify-content-between align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#top50Collapse" aria-expanded="false" aria-controls="top50Collapse">
+            <span>📊 Top 50 Jugadores (Desplegable)</span>
+            <i className="bi bi-chevron-down"></i>
+          </button>
+          <div className="collapse show" id="top50Collapse">
+            <div className="card shadow mt-2">
+              <div className="card-header bg-dark-subtle">
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                    <div className="mb-2 mb-md-0">
+                        <h4 className="mb-0">Top 50 Jugadores</h4>
+                        <small className="text-muted">Última actualización: {formatDate(stats.lastUpdated)}</small>
+                    </div>
+                    <div className="d-flex gap-2 w-100" style={{ maxWidth: '450px' }}>
+                        <input type="text" className="form-control" placeholder="🔍 Buscar por nombre..." onChange={(e) => setSearchTerm(e.target.value)} />
+                        <button className="btn btn-outline-secondary flex-shrink-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#advancedFilters">
+                            <i className="bi bi-funnel-fill me-1"></i> Filtros
+                        </button>
+                    </div>
                 </div>
-                <div className="d-flex gap-2 w-100" style={{ maxWidth: '450px' }}>
-                    <input type="text" className="form-control" placeholder="🔍 Buscar por nombre..." onChange={(e) => setSearchTerm(e.target.value)} />
-                    <button className="btn btn-outline-secondary flex-shrink-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#advancedFilters">
-                        <i className="bi bi-funnel-fill me-1"></i> Filtros
-                    </button>
-                </div>
-            </div>
-          </div>
-
-          <div className="card-body">
-            {error ? (
-              <div className="alert alert-danger"><strong>Error:</strong> No se pudieron cargar las estadísticas. ({error})</div>
-            ) : (
-              <div className="table-responsive">
-                <table className="table table-dark table-striped table-hover">
-                  <thead>
-                    <tr>
-                      {headers.map(header => (
-                        <th key={header.key} scope="col" onClick={() => requestSort(header.key)} style={{ cursor: 'pointer' }}>
-                          {header.label} <SortIcon direction={sortConfig.key === header.key ? sortConfig.direction : null} />
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedAndFilteredPlayers.map((player, index) => (
-                      <tr key={player.rank || index}>
-                        <th scope="row">{sortConfig.key === 'rank' && sortConfig.direction === 'asc' ? index + 1 : player.rank}</th>
-                        <td>{player.name}</td>
-                        <td>{player.level}</td>
-                        <td>{player.xp}</td>
-                        <td>{player.wins}</td>
-                        <td>{player.goals}</td>
-                        <td>{player.assists}</td>
-                        <td>{player.matches}</td>
-                        <td>{player.mvps}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
               </div>
-            )}
+
+              <div className="card-body">
+                {error ? (
+                  <div className="alert alert-danger"><strong>Error:</strong> No se pudieron cargar las estadísticas. ({error})</div>
+                ) : (
+                  <div className="table-responsive">
+                    <table className="table table-dark table-striped table-hover">
+                      <thead>
+                        <tr>
+                          {headers.map(header => (
+                            <th key={header.key} scope="col" onClick={() => requestSort(header.key)} style={{ cursor: 'pointer' }}>
+                              {header.label} <SortIcon direction={sortConfig.key === header.key ? sortConfig.direction : null} />
+                            </th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {sortedAndFilteredPlayers.map((player, index) => (
+                          <tr key={player.rank || index}>
+                            <th scope="row">{sortConfig.key === 'rank' && sortConfig.direction === 'asc' ? index + 1 : player.rank}</th>
+                            <td>{player.name}</td>
+                            <td>{player.level}</td>
+                            <td>{player.xp}</td>
+                            <td>{player.wins}</td>
+                            <td>{player.goals}</td>
+                            <td>{player.assists}</td>
+                            <td>{player.matches}</td>
+                            <td>{player.mvps}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
