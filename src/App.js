@@ -168,7 +168,11 @@ function App() {
                 </a>
                 <ul className="dropdown-menu dropdown-menu-dark">
                   <li><a className="dropdown-item" href="https://github.com/PasqualeAlexander/BIGGER-WEB/actions/workflows/update-stats.yml" target="_blank" rel="noopener noreferrer"><i className="bi bi-arrow-clockwise me-2"></i>Forzar Actualización</a></li>
-                  <li><a className="dropdown-item" href="https://github.com/PasqualeAlexander/bot-JT-LNB" target="_blank" rel="noopener noreferrer"><i className="bi bi-robot me-2"></i>Repositorio del Bot</a></li>
+                  <li><hr className="dropdown-divider"></li>
+                  <li><a className="dropdown-item" href="https://www.tiktok.com/@liganacionaldebigger" target="_blank" rel="noopener noreferrer"><i className="bi bi-tiktok me-2"></i>TikTok</a></li>
+                  <li><a className="dropdown-item" href="https://www.instagram.com/lnbhaxball/" target="_blank" rel="noopener noreferrer"><i className="bi bi-instagram me-2"></i>Instagram</a></li>
+                  <li><a className="dropdown-item" href="https://youtube.com/liganacionaldebigger" target="_blank" rel="noopener noreferrer"><i className="bi bi-youtube me-2"></i>YouTube</a></li>
+                  <li><a className="dropdown-item" href="https://twitch.tv/liganacionalbigger" target="_blank" rel="noopener noreferrer"><i className="bi bi-twitch me-2"></i>Twitch</a></li>
                 </ul>
               </li>
             </ul>

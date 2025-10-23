@@ -5,6 +5,8 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: linear-gradient(to bottom right, #2c3e50, #4ca1af); /* Dark blue-grey to light blue-green */
+  background-attachment: fixed; /* Ensures the gradient covers the whole page */
 }
 
 code {
